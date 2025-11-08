@@ -1,5 +1,6 @@
 import { AgentResponse, CrisisScenario } from '@/types';
 import { Bot, TrendingUp, TrendingDown, AlertTriangle, Lightbulb, ChevronRight } from 'lucide-react';
+import MissionReveal from './MissionReveal';
 
 interface AgentNarrativeProps {
   response: AgentResponse | null;
@@ -102,21 +103,28 @@ export default function AgentNarrative({ response, scenario, capital }: AgentNar
 
       {/* Mission Status */}
       {response.missionComplete && (
-        <div className="mission-complete-banner">
-          <div className="text-center">
-            <h3 className="text-xl font-bold text-emerald-400 mb-2">Mission Complete!</h3>
-            <p className="text-gray-300 mb-3">
-              You survived {scenario.name} with ${response.capitalAfter.toLocaleString()}
-            </p>
-            <div className="flex items-center justify-center gap-4 text-sm">
-              <span className="text-gray-400">
-                Return: <span className={capital > 100000 ? 'text-emerald-400' : 'text-red-400'}>
-                  {((response.capitalAfter - 100000) / 1000).toFixed(1)}%
+        <>
+          <div className="mission-complete-banner">
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-emerald-400 mb-2">Mission Complete!</h3>
+              <p className="text-gray-300 mb-3">
+                You survived {scenario.maskedName} with ${response.capitalAfter.toLocaleString()}
+              </p>
+              <div className="flex items-center justify-center gap-4 text-sm">
+                <span className="text-gray-400">
+                  Return: <span className={capital > 100000 ? 'text-emerald-400' : 'text-red-400'}>
+                    {((response.capitalAfter - 100000) / 1000).toFixed(1)}%
+                  </span>
                 </span>
-              </span>
+              </div>
             </div>
           </div>
-        </div>
+
+          {/* Mission Reveal */}
+          <div className="mt-6">
+            <MissionReveal scenario={scenario} />
+          </div>
+        </>
       )}
     </div>
   );

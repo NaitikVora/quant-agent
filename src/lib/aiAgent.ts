@@ -20,12 +20,12 @@ export async function analyzeDecision(input: AnalyzeDecisionInput): Promise<Agen
   const nextEvent = scenario.keyEvents[stageIndex + 1];
   const indicators = scenario.economicIndicators;
 
-  const prompt = `You are an expert quantitative trading coach analyzing a trader's decision during the ${scenario.name}.
+  const prompt = `You are an expert quantitative trading coach analyzing a trader's decision during ${scenario.maskedName}.
 
 CURRENT SITUATION:
-- Mission: ${scenario.name} (${scenario.description})
-- Current Stage: ${currentEvent.title} (${currentEvent.date})
-- Event: ${currentEvent.description}
+- Mission: ${scenario.maskedName} (${scenario.maskedDescription})
+- Current Stage: ${currentEvent.maskedTitle} (${currentEvent.date})
+- Event: ${currentEvent.maskedDescription}
 - Market Impact: ${currentEvent.impact} (${currentEvent.marketReaction}% move)
 - Trader's Capital: $${capital.toLocaleString()}
 - Allocation: $${allocation.toLocaleString()} (${((allocation/capital)*100).toFixed(1)}%)
@@ -45,7 +45,7 @@ Analyze this decision and provide:
    - The market reaction (${currentEvent.marketReaction}%)
 3. What better alternative strategy could they have used?
 4. A risk management callout specific to their approach
-5. What happens next in the crisis${nextEvent ? ` (hint: ${nextEvent.title})` : ' (mission ending)'}
+5. What happens next in the crisis${nextEvent ? ` (hint: ${nextEvent.maskedTitle})` : ' (mission ending)'}
 
 RESPONSE FORMAT (JSON):
 {
@@ -60,7 +60,7 @@ Be realistic, educational, and engaging. Make it feel like a game where decision
 
   try {
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 1024,
       messages: [{
         role: 'user',
@@ -90,14 +90,14 @@ Be realistic, educational, and engaging. Make it feel like a game where decision
     const nextStageIndex = missionComplete ? stageIndex : stageIndex + 1;
 
     return {
-      stageTitle: currentEvent.title,
+      stageTitle: currentEvent.maskedTitle,
       summary: analysis.summary || 'Market moved based on your decision.',
       pnl,
       pnlPct,
       capitalAfter,
       betterAlternative: analysis.betterAlternative || 'Consider diversifying your approach.',
       riskCallout: analysis.riskCallout || 'Always manage your risk.',
-      nextEvents: analysis.nextEvents || (nextEvent ? [nextEvent.title] : ['Mission Complete']),
+      nextEvents: analysis.nextEvents || (nextEvent ? [nextEvent.maskedTitle] : ['Mission Complete']),
       nextStageIndex,
       missionComplete
     };
@@ -140,10 +140,10 @@ function fallbackAnalysis(input: AnalyzeDecisionInput): AgentResponse {
   const nextStageIndex = missionComplete ? stageIndex : stageIndex + 1;
 
   return {
-    stageTitle: currentEvent.title,
+    stageTitle: currentEvent.maskedTitle,
     summary: pnl >= 0
-      ? `Your ${isBearish ? 'defensive' : 'offensive'} positioning worked. ${currentEvent.title} unfolded as you anticipated, earning ${Math.abs(pnl).toLocaleString()} credits.`
-      : `Market moved against you. ${currentEvent.title} caught you wrong-footed, costing ${Math.abs(pnl).toLocaleString()} credits.`,
+      ? `Your ${isBearish ? 'defensive' : 'offensive'} positioning worked. ${currentEvent.maskedTitle} unfolded as you anticipated, earning ${Math.abs(pnl).toLocaleString()} credits.`
+      : `Market moved against you. ${currentEvent.maskedTitle} caught you wrong-footed, costing ${Math.abs(pnl).toLocaleString()} credits.`,
     pnl,
     pnlPct,
     capitalAfter,
@@ -153,7 +153,7 @@ function fallbackAnalysis(input: AnalyzeDecisionInput): AgentResponse {
     riskCallout: allocationPct > 0.5
       ? `You allocated ${(allocationPct * 100).toFixed(0)}% of capital. Consider reducing position sizing in volatile conditions.`
       : 'Your conservative sizing provides room to add on conviction or absorb drawdowns.',
-    nextEvents: nextEvent ? [nextEvent.title, nextEvent.description] : ['Mission Complete - Analyze your performance'],
+    nextEvents: nextEvent ? [nextEvent.maskedTitle, nextEvent.maskedDescription] : ['Mission Complete - Analyze your performance'],
     nextStageIndex,
     missionComplete
   };

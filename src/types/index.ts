@@ -3,6 +3,9 @@ export interface CrisisScenario {
   name: string;
   code: string;
   description: string;
+  maskedName: string;
+  maskedDescription: string;
+  realWorldSummary: string;
   startDate: string;
   endDate: string;
   duration: string;
@@ -17,8 +20,18 @@ export interface KeyEvent {
   date: string;
   title: string;
   description: string;
+  maskedTitle: string;
+  maskedDescription: string;
+  headlines: string[];
+  newsArticles: NewsArticle[];
   impact: 'low' | 'medium' | 'high' | 'extreme';
   marketReaction: number;
+}
+
+export interface NewsArticle {
+  source: string;
+  headline: string;
+  snippet: string;
 }
 
 export interface EconomicIndicator {
@@ -58,4 +71,13 @@ export interface AgentResponse {
   nextEvents: string[];
   nextStageIndex: number;
   missionComplete: boolean;
+}
+
+export interface StrategyTemplate {
+  id: string;
+  name: string;
+  emoji: string;
+  description: string;
+  template: string;
+  category: 'bullish' | 'bearish' | 'neutral' | 'hedge';
 }

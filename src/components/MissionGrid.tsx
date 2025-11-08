@@ -40,11 +40,11 @@ export default function MissionGrid({ missions, selectedMissionId, onSelect }: M
                     {mission.difficulty}
                   </span>
                 </div>
-                <h3 className="font-semibold text-gray-100">{mission.name}</h3>
+                <h3 className="font-semibold text-gray-100">{mission.maskedName}</h3>
               </div>
               <TrendingDown className="h-5 w-5 text-red-400 flex-shrink-0" />
             </div>
-            <p className="text-xs text-gray-400 mb-2">{mission.description}</p>
+            <p className="text-xs text-gray-400 mb-2">{mission.maskedDescription}</p>
             <div className="flex items-center gap-4 text-xs text-gray-500">
               <span>{mission.duration}</span>
               <span className="text-red-400">{mission.maxDrawdown}</span>
